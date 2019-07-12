@@ -63,6 +63,34 @@
                 </form>
             </div>
         </nav>
+        {# --------------------------- #}
+        {# Javascript Message Handling #}
+        {# --------------------------- #}
+        {# Template for javascript to use - allows display of messages without a refresh (passing them through flask) #}
+        <span id="js-alert-hook"></span>
+        <template>
+            <div id="js-alert-msg" class="alert" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <span id="js-msg-content">Alert triggered</span>
+            </div>
+        </template>
+        {# ---------------------- #}
+        {# Flash Message Handling #}
+        {# ---------------------- #}
+        {# Recieve and handle flash messages with Bootstrap. We expect both a message and a category.  The category must be a valid Bootstrap category#}
+        {# Categories: primary=blue, secondary=gray, success=green, danger=red, warning=yellow, info=blue/green, light=white, dark=dark-gray #}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
         <div class="container">
             {% block content %}
             {% endblock %}

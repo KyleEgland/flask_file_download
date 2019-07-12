@@ -12,44 +12,86 @@
 {# ------------ #}
 <ul class="nav nav-tabs" id="demoTabs" role="tablist">
     <li class="nav-item">
-        <a class="nav-link active" id="form-file-tab" data-toggle="tab" href="#formToFile" role="tab" aria-controls="home" aria-selected="true">Encode</a>
+        <a class="nav-link active" id="form-file-tab" data-toggle="tab" href="#formToFile" role="tab" aria-controls="home" aria-selected="true">Form to File</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" id="js-call-tab" data-toggle="tab" href="#javascriptCall" role="tab" aria-controls="profile" aria-selected="false">Decode</a>
+        <a class="nav-link" id="js-call-tab" data-toggle="tab" href="#javascriptCall" role="tab" aria-controls="profile" aria-selected="false">Javascript Call</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" id="files-tab" data-toggle="tab" href="#staticFile" role="tab" aria-controls="contact" aria-selected="false">Files</a>
+        <a class="nav-link" id="static-files-tab" data-toggle="tab" href="#staticFile" role="tab" aria-controls="contact" aria-selected="false">Static Files</a>
     </li>
 </ul>
 {# ---------------- #}
 {# Demo nav content #}
 {# ---------------- #}
 <div class="tab-content" id="demoTabContent">
-    {# ----------- #}
-    {# Encode form #}
-    {# ----------- #}
+    {# ------------ #}
+    {# Form to File #}
+    {# ------------ #}
+    {# Getting file from form contents by submitting the form to a separate endpoint (getformfile). #}
+    {# That route then grabs the form fields specific to the form on this tab. #}
+    {# It then returns a response to the browser containing the file with the specified name. #}
+    {# Form done completely with Bootstrap #}
+    {# The route receiving the submission must get the form inputs from the request #}
     <div class="tab-pane fade show active" id="formToFile" role="tabpanel" aria-labelledby="form-file-tab">
-        <h3>Form to File</h3>
+        <h3 class="mt-2">Form to File</h3>
         <p>
-            Demonstrating ingesting data from a form and returning a file download to the user.  This solution is using a form submit to trigger the download.  The submit request calls the /formdownload flask endpoint which gathers the data from the form, puts into a file, and repsonds with the file for download.
+            Demonstrating ingesting data from a form and returning a file download to the user.  This solution is using a form submit to trigger the download.  The submit request goes to /getformfile flask endpoint which gathers the data from the form, puts into a file, and repsonds with the file for download.  Note, there is also an option to "Save to server".  This populates files for the "Static Files" demo tab when checked.
         </p>
-        <form action="/formdownload" method="post">
+        <form action="/getformfile" method="post">
             <div class="form-group">
-                
+                <label for="fileNameInput">File Name</label>
+                <input type="text" class="form-control" id="fileNameInput" aria-describedby="fileNameInputHelp" placeholder="Enter file name" name="filenameinput" required>
+                <small id="fileNameInputHelp" class="form-text text-muted">Enter a file name, for example: test.txt</small>
             </div>
+            <div class="form-group">
+                <label for="fileContentsTextarea">File Contents</label>
+                <textarea class="form-control" id="fileContentsTextarea" aria-describedby="fileContentsTextareaHelp" rows="5" name="filecontentstextarea" required></textarea>
+                <small id="fileContentsTextareaHelp" class="form-text text-muted">Enter the text you'd like to save to a file</small>
+            </div>
+            <div class="form-group">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="saveToStaticCheckbox" name="savetostaticcheckbox" value="True">
+                    <label class="form-check-label" for="saveToStaticCheckbox">Save to server</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-dark">Submit</button>
         </form>
     </div>
     {# ----------- #}
-    {# Decode form #}
+    {# JS Call Tab #}
     {# ----------- #}
+    {# This tab has a form that will be turned into a file by javascript, becuasae the js is specific to this page #}
+    {# it is input into the base template script block using a super function (see bottom of this page) #}
     <div class="tab-pane fade" id="javascriptCall" role="tabpanel" aria-labelledby="js-call-tab">
-        <h1>TAB 2</h1>
+        <h3 class="mt-2">Javascript Submit to File</h3>
+        <p>
+            This demonstration is similar to the previous (Form to File) except the button triggers some javascript (jQuery to be precise).  The JS script will grab the inputs and submit them in a json object to /jsform file endpoint.  That endpoint will then process the json into a file which is returned to the client.
+        </p>
+        <form id="js-call-form" action="/jsformfile" method="post">
+            <div class="form-group">
+                <label for="jsfileNameInput">File Name</label>
+                <input type="text" class="form-control" id="jsfileNameInput" aria-describedby="jsfileNameInputHelp" placeholder="Enter file name" name="jsfilenameinput" required>
+                <small id="jsfileNameInputHelp" class="form-text text-muted">Enter a file name, for example: test.txt</small>
+            </div>
+            <div class="form-group">
+                <label for="jsfileContentsTextarea">File Contents</label>
+                <textarea class="form-control" id="jsfileContentsTextarea" aria-describedby="jsfileContentsTextareaHelp" rows="5" name="jsfilecontentstextarea" required></textarea>
+                <small id="fileContentsTextareaHelp" class="form-text text-muted">Enter the text you'd like to save to a file</small>
+            </div>
+            <button id="jsformsubmit" type="submit" class="btn btn-dark">Submit</button>
+        </form>
     </div>
     {# ---------- #}
     {# Files form #}
     {# ---------- #}
-    <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
+    <div class="tab-pane fade" id="staticFile" role="tabpanel" aria-labelledby="static-files-tab">
         <h1>TAB 3</h1>
     </div>
 </div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script src="{{ url_for('static', filename='javascript/main/js-file-dl.js') }}"></script>
 {% endblock %}
